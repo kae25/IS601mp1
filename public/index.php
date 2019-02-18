@@ -6,62 +6,6 @@
  * Time: 7:21 PM
  */
 
-
-$fileName = 'miniproj.csv';
-main::start($fileName);
-
-class main {
-
-    static public function start($fileName) {
-        $records = csv::getRecords($fileName);
-        $table = html::generateTable($records);
-        system::printPage($table);
-    }
-
-}
-
-class csv {
-
-    static public function getRecords($fileName) {
-
-        $file = fopen($fileName, "r");
-        while(! feof($file))
-        {
-            $record = fgetcsv($file);
-
-            $records[] = $record;
-        }
-
-        fclose($file);
-        return $records;
-
-    }
-}
-
-class html{
-
-    static public function generateTable() {}
-}
-
-class system {
-
-    static public function printPage($page) {}
-
-echo $page;
-}
-
-
-COMMIT 1: Feature: Adding readable csv file
-
-<?php
-/**
- * Created by PhpStorm.
- * User: kae25
- * Date: 2/14/19
- * Time: 7:21 PM
- */
-
-
 main::start("miniproj.csv");
 
 class main {
@@ -69,6 +13,8 @@ class main {
     static public function start($filename) {
 
         $records = csv::getRecords($filename);
+        $table = html::generateTable($records);
+        system::printPage($table);
 
     }
 
@@ -78,13 +24,22 @@ class csv {
 
     static public function getRecords($filename) {
 
-        $file = fopen($filename, "r");
+        $file = fopen($filename,"r");
+
+        $fieldNames = array();
+
+        $count = 0;
 
         while(! feof($file))
         {
             $record = fgetcsv($file);
 
-            $records[] = recordFactory::create($record);
+            if($count == 0) {
+                $fieldNames = $record;
+            } else {
+                $records[] = recordFactory::create($fieldNames, $record);
+            }
+            $count++;
         }
 
         fclose($file);
@@ -93,31 +48,80 @@ class csv {
     }
 }
 
-class record {
+class html {
 
 
-    public function __construct(Array $record = null)
-    {
-        $this->createProperty();
+    public static function generateTable($records) {
 
-        print_r($this);
+        $count = 0;
+
+        foreach ($records as $record) {
+
+            if($count == 0) {
+
+                $array = $record->returnArray();
+                $fields = array_keys($array);
+                $values = array_values($array);
+
+
+            } else {
+                $array = $record->returnArray();
+                $values = array_values($array);
+
+            }
+            $count++;
+        }
+
+        print_r("<html><body><table>\n\n");
+        $array = fopen("miniproj.csv", "r");
+
+        while (($line = fgetcsv($array)) !== false) {
+
+            foreach ($line as $cell) {
+
+                print_r("<td>" . htmlspecialchars($cell) . "</td>");
+            }
+            print_r("</tr>\n");
+        }
+        fclose($array);
+        print_r( "\n</table></body></html>");
     }
 
-    public function createProperty($name, $value) {
+}
 
-        $this->{$name} = $value
 
+
+class record {
+
+    public function __construct(Array $fieldNames = null, $values = null )
+    {
+        $record = array_combine($fieldNames, $values);
+
+        foreach ($record as $property => $value) {
+            $this->createProperty($property, $value);
+        }
+    }
+
+    public function returnArray() {
+        $array = (array) $this;
+
+        return $array;
+    }
+
+    public function createProperty($name = 'First', $value = 'Dean') {
+
+        $this->{$name} = $value;
     }
 }
 
 class recordFactory {
 
-public static create(Array $array = null)
+    public static function create(Array $fieldNames = null, Array $values = null) {
 
-{
-$record = new record($array);
+        $record = new record($fieldNames, $values);
 
-return $record;
-}
+        return $record;
+
+    }
 
 }
