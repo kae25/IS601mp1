@@ -79,29 +79,34 @@ class html
 
         }
 
+        function jj_readcsv($fileName, $header=false) {
+            $f = fopen($fileName, "r");
+    }
+
         if (($f = fopen("miniproj.csv", "r")) !== false) {
 
-            $var = print_r("<table border='6'>\n\n");
-
-            echo '<table border="5">';
+            $var =  print_r("<html><body><table style='text-align: left' cellspacing='5'>\n\n");
+            
         }
 
-        while (($line = fgetcsv($f, 1000, ",")) !== false) {
-
+        while (($cell = fgetcsv($f, 1000, ",")) !== false) {
 
             foreach ($fields as $fields) {
+
                 echo ("<th>$fields</th>");
             }
 
-            echo ("</tr>\n");
+            echo ("<tr>");
 
-            foreach ($line as $cell) {
+            foreach ($cell as $cell) {
 
-                    echo("<td>" . ($cell) . "</td>");
+       echo("<td bgcolor='f2f2f2' width='100'>" . htmlspecialchars($cell) . "</td>");
 
-                for ($i=1; $i<count($result); $i++) {
+                for ($i=0; $i<count($result); $i++) {
 
                     echo ("<td>".implode("</td><td>",$result[$i])."</td>");
+
+                    echo ("</tr>\n");
 
                 }
             }
