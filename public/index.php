@@ -8,6 +8,7 @@
 
 main::start("miniproj.csv");
 
+
 class main {
 
     static public function start($filename) {
@@ -48,49 +49,68 @@ class csv {
     }
 }
 
-class html {
+class html
+{
 
-
-    public static function generateTable($records) {
+    public static function generateTable($records)
+    {
 
         $count = 0;
 
         foreach ($records as $record) {
 
-            if($count == 0) {
+            if ($count == 0) {
 
                 $array = $record->returnArray();
                 $fields = array_keys($array);
                 $values = array_values($array);
 
+                //print_r($fields);
+                //print_r($values);
 
             } else {
                 $array = $record->returnArray();
                 $values = array_values($array);
 
+                 //print_r($values);s
+
             }
             $count++;
+
         }
 
-        print_r("<html><body><table>\n\n");
-        $array = fopen("miniproj.csv", "r");
+        if (($f = fopen("miniproj.csv", "r")) !== false) {
 
-        while (($line = fgetcsv($array)) !== false) {
+            $var = print_r("<table border='6'>\n\n");
+
+            echo '<table border="5">';
+        }
+
+        while (($line = fgetcsv($f, 1000, ",")) !== false) {
+
+
+            foreach ($fields as $fields) {
+                echo ("<th>$fields</th>");
+            }
+
+            echo ("</tr>\n");
 
             foreach ($line as $cell) {
 
-                print_r("<td>" . htmlspecialchars($cell) . "</td>");
+                    echo("<td>" . ($cell) . "</td>");
+
+                for ($i=1; $i<count($result); $i++) {
+
+                    echo ("<td>".implode("</td><td>",$result[$i])."</td>");
+
+                }
             }
-            print_r("</tr>\n");
         }
         fclose($array);
-        print_r( "\n</table></body></html>");
+        return ($var);
     }
 
 }
-
-
-
 class record {
 
     public function __construct(Array $fieldNames = null, $values = null )
@@ -112,6 +132,7 @@ class record {
 
         $this->{$name} = $value;
     }
+
 }
 
 class recordFactory {
@@ -125,3 +146,5 @@ class recordFactory {
     }
 
 }
+
+
